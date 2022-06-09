@@ -9,43 +9,41 @@ on:
     branches: "*"
 
 jobs:
-  # initialize:
-  #   runs-on: ubuntu-latest
-  #   name: Initialize
-  #   steps:
-  #     - uses: actions/setup-node@v2
-  #     - uses: actions/checkout@v2
-  #     - name: Install Dependencies
-  #       run: npm ci
-  #     - name: Set NPM token
-  #       run: npm config set '//registry.npmjs.org/:_authToken' "${UI_GITHUB_TOKEN}"
-  release:
-    name: Release
+  initialize:
     runs-on: ubuntu-latest
+    name: Initialize
     steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@v1
-        with:
-          node-version: "16.x"
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.UI_GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  # publish-to-chromatic:
+      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v2
+      - name: Install Dependencies
+        run: npm ci
+  # release:
+  #   name: Release
   #   runs-on: ubuntu-latest
-  #   name: Publish to Chromatic
-  #   needs: [initialize]
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@master
+  #     - uses: actions/setup-node@v1
   #       with:
-  #         fetch-depth: 0
-  #     - name: Publish to Chromatic
-  #       uses: chromaui/action@v1
-  #       with:
-  #         projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+  #         node-version: "16.x"
+  #     - run: npm ci
+  #     - run: npm run build --if-present
+  #     - run: npx semantic-release
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.UI_GITHUB_TOKEN }}
+  #         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-to-chromatic:
+    runs-on: ubuntu-latest
+    name: Publish to Chromatic
+    needs: [initialize]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
 
   # semantic-release-versioning:
   #   runs-on: ubuntu-latest
